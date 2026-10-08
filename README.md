@@ -38,8 +38,11 @@ models, which is the right tool for high-volume, auditable routing.
 ```
 
 1. **Classify (`classifier.py`).** Two logistic-regression models over a shared
-   TF-IDF vectoriser predict the request type and the department, each with a
-   confidence and the terms that drove the type decision.
+   `FeatureUnion` of word (1-2 gram) and character (`char_wb`, 3-5) TF-IDF views
+   predict the request type and the department, each with a confidence and the
+   terms that drove the type decision. Character n-grams let the model recognise
+   recurring stems (*invoice*, *connection*, *outage*) in wording it was not
+   trained on.
 2. **Rules (`rules.py`).** Priority starts from the request type and is raised to
    high when the text carries urgency. The deadline is the type's statutory window
    counted in business days from the received date.
@@ -84,6 +87,28 @@ Settings load from environment variables with the `PQ_` prefix (see
 The statutory response windows per request type live in `taxonomy.py`
 (`SLA_BUSINESS_DAYS`); set them from the governing law for a real deployment.
 
+## Evaluation: not the misleading 1.0
+
+The classifiers are trained on synthetic requests. A random split of that set
+would report ~1.0 accuracy — meaningless, because train and test would share the
+same phrasings. So `pqrs_router.evaluation` runs a **phrase-disjoint split**: the
+type openers, department topics, and type-context clauses are each partitioned,
+and the test messages are built only from held-out phrasings, so the test wording
+was never seen in training.
+
+```
+$ python -m pqrs_router.evaluation
+  type accuracy        : 0.97     # five types; chance ~0.20
+  type train-test gap  : 0.04     # tiny -> not overfit
+  department accuracy  : 0.89     # six departments; chance ~0.17
+  department gap       : 0.11
+```
+
+These are the honest generalisation figures, and the small gaps are the evidence
+the models are neither underfit (scores far above chance) nor overfit (gaps are
+bounded). Generalisation works because each label's signal is spread across
+*recurring vocabulary* that the character n-grams pick up even in unseen phrasings.
+
 ## Testing
 
 ```bash
@@ -91,9 +116,10 @@ ruff check pqrs_router tests
 pytest --cov=pqrs_router --cov-report=term-missing --cov-fail-under=80
 ```
 
-The suite covers the classifiers (including a held-out accuracy check), the rules
-(business-day arithmetic, per-type SLAs, priority and urgency), the router
-(including the uncertainty flag), the HTTP API, and the CLI.
+The suite covers the classifiers (via the phrase-disjoint evaluation, asserting
+both generalisation and bounded overfitting gaps), the rules (business-day
+arithmetic, per-type SLAs, priority and urgency), the router (including the
+uncertainty flag), the HTTP API, and the CLI.
 
 ## Documentation
 

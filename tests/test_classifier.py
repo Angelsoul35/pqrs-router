@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import numpy as np
 import pytest
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 
 from pqrs_router.classifier import RequestClassifier
-from pqrs_router.generate import make_dataset
+from pqrs_router.evaluation import phrase_disjoint_eval
 from pqrs_router.taxonomy import Department, RequestType
 
 
@@ -28,12 +25,14 @@ def test_unfitted_raises():
         RequestClassifier().classify("anything")
 
 
-def test_held_out_accuracy_is_high():
-    texts, yt, yd = make_dataset(n=1200, seed=3)
-    idx = np.arange(len(texts))
-    tr, te = train_test_split(idx, test_size=0.25, random_state=0)
-    clf = RequestClassifier().fit(
-        [texts[i] for i in tr], [yt[i] for i in tr], [yd[i] for i in tr]
-    )
-    pt = [clf.classify(texts[i]).request_type.value for i in te]
-    assert accuracy_score([yt[i] for i in te], pt) > 0.95
+def test_phrase_disjoint_generalisation_and_no_overfit():
+    # Honest evaluation: train and test use disjoint pools of phrasings, so the
+    # test wording is unseen. A random split would report a misleading ~1.0.
+    report = phrase_disjoint_eval()
+    # Not underfit: well above chance (type ~0.20, department ~0.17).
+    assert report.type_accuracy >= 0.85
+    assert report.department_accuracy >= 0.80
+    # Not pathologically overfit: bounded train-test gaps.
+    assert report.type_train_accuracy >= 0.95
+    assert report.type_gap <= 0.15
+    assert report.department_gap <= 0.20

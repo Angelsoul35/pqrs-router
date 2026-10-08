@@ -52,8 +52,24 @@ decidir si la decisión es fiable o va a revisión (guía 03).
 
 ### Calidad
 
-En datos de validación (que el modelo no vio), la exactitud de tipo y de
-departamento es muy alta, porque el lenguaje de estas solicitudes es distintivo.
+### Evaluación honesta (over/underfitting)
+
+Con datos sintéticos de plantillas, un split aleatorio daría ~1.0 de exactitud y
+sería **mentira**: train y test compartirían las frases y mediríamos memoria. Por
+eso `evaluation.py` hace un **split por frases disjuntas** (aperturas de tipo,
+temas de departamento y cláusulas de contexto se parten; la prueba usa solo las
+partes retiradas). Resultado honesto:
+
+```
+type accuracy      : 0.97   (5 tipos; azar ~0.20)   gap 0.04 -> no sobreajusta
+department accuracy: 0.89   (6 áreas; azar ~0.17)   gap 0.11
+```
+
+Generaliza porque la señal de cada etiqueta está repartida en **vocabulario
+recurrente** (invoice/charge, connection/signal, outage/leak...) que los n-gramas
+de carácter reconocen aunque el fraseo exacto esté retirado. No hay underfitting
+(muy por encima del azar) ni overfitting patológico (la brecha es pequeña). Además
+usamos word + char n-grams (`FeatureUnion`) para capturar esas raíces.
 
 ## La explicabilidad, paso a paso
 

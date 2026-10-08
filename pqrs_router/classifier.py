@@ -13,9 +13,19 @@ from dataclasses import dataclass, field
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import FeatureUnion
 
 from .generate import make_dataset
 from .taxonomy import Department, RequestType
+
+
+def _build_features() -> FeatureUnion:
+    return FeatureUnion(
+        [
+            ("word", TfidfVectorizer(analyzer="word", ngram_range=(1, 2), min_df=2)),
+            ("char", TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5), min_df=2)),
+        ]
+    )
 
 
 @dataclass
@@ -29,9 +39,9 @@ class Classification:
 
 class RequestClassifier:
     def __init__(self) -> None:
-        self._vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=2)
-        self._type = LogisticRegression(max_iter=1000, C=4.0)
-        self._dept = LogisticRegression(max_iter=1000, C=4.0)
+        self._features = _build_features()
+        self._type = LogisticRegression(max_iter=2000, C=2.0)
+        self._dept = LogisticRegression(max_iter=2000, C=2.0)
         self._fitted = False
 
     def fit(
@@ -42,7 +52,7 @@ class RequestClassifier:
     ) -> RequestClassifier:
         if texts is None:
             texts, y_type, y_dept = make_dataset()
-        x = self._vectorizer.fit_transform(texts)
+        x = self._features.fit_transform(texts)
         self._type.fit(x, y_type)
         self._dept.fit(x, y_dept)
         self._fitted = True
@@ -51,18 +61,22 @@ class RequestClassifier:
     def _explain(self, x_row, model, class_index: int, k: int = 4) -> list[tuple[str, float]]:
         coef = model.coef_[class_index]
         contributions = x_row.toarray().ravel() * coef
-        terms = self._vectorizer.get_feature_names_out()
+        names = self._features.get_feature_names_out()
         order = np.argsort(contributions)[::-1]
-        return [
-            (terms[i], round(float(contributions[i]), 4))
-            for i in order
-            if contributions[i] > 0
-        ][:k]
+        out: list[tuple[str, float]] = []
+        for i in order:
+            if contributions[i] <= 0:
+                break
+            if names[i].startswith("word__"):
+                out.append((names[i].removeprefix("word__"), round(float(contributions[i]), 4)))
+            if len(out) >= k:
+                break
+        return out
 
     def classify(self, text: str) -> Classification:
         if not self._fitted:
             raise RuntimeError("Classifier is not fitted. Call fit() first.")
-        x = self._vectorizer.transform([text])
+        x = self._features.transform([text])
 
         type_proba = self._type.predict_proba(x)[0]
         t_idx = int(np.argmax(type_proba))

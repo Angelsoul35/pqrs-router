@@ -134,4 +134,4 @@ uncertainty flag), the HTTP API, and the CLI.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+[MIT](LICENSE) © Angelo David Padilla Romero

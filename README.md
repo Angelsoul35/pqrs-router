@@ -10,6 +10,12 @@ model across much of Latin America, where each request type carries a legal
 response window. pqrs-router turns a free-text message into the structured
 decision an agency needs to act on it in time.
 
+[![CI](https://img.shields.io/badge/CI-GitHub%20Actions-blue)](.github/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+---
+
 ## Why it matters
 
 Public bodies receive large volumes of unstructured requests and are legally

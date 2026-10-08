@@ -61,8 +61,8 @@ temas de departamento y cláusulas de contexto se parten; la prueba usa solo las
 partes retiradas). Resultado honesto:
 
 ```
-type accuracy      : 0.97   (5 tipos; azar ~0.20)   gap 0.04 -> no sobreajusta
-department accuracy: 0.89   (6 áreas; azar ~0.17)   gap 0.11
+type accuracy      : 0.965  (5 tipos; azar ~0.20)   gap 0.035 -> no sobreajusta
+department accuracy: 0.892  (6 áreas; azar ~0.17)   gap 0.108
 ```
 
 Generaliza porque la señal de cada etiqueta está repartida en **vocabulario

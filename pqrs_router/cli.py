@@ -23,8 +23,10 @@ def _show(result: dict) -> None:
         f"{result['department']:17} due {result['due_date']} "
         f"({result['sla_business_days']} business days){flag}"
     )
-    print(f"      type conf {result['type_confidence']:.2f}, dept conf "
-          f"{result['department_confidence']:.2f}; {result['priority_reasons'][-1]}")
+    print(
+        f"      type conf {result['type_confidence']:.2f}, dept conf "
+        f"{result['department_confidence']:.2f}; {result['priority_reasons'][-1]}"
+    )
 
 
 def demo() -> None:

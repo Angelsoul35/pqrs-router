@@ -42,6 +42,7 @@ def route(request: RouteRequest) -> dict:
         try:
             received = date.fromisoformat(request.received_date)
         except ValueError as exc:
-            raise HTTPException(status_code=422, detail="received_date must be ISO (YYYY-MM-DD)") \
-                from exc
+            raise HTTPException(
+                status_code=422, detail="received_date must be ISO (YYYY-MM-DD)"
+            ) from exc
     return get_service().route(request.text, received=received)

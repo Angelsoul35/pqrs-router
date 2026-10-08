@@ -27,8 +27,11 @@ tecnologías.
 ## Sobre la clasificación
 
 **¿Cómo clasificas tipo y departamento?**
-Dos regresiones logísticas sobre un TF-IDF compartido: una para el tipo (5
-clases), otra para el departamento (6). En validación, exactitud muy alta.
+Dos regresiones logísticas sobre un TF-IDF compartido (word + char n-gramas): una
+para el tipo (5 clases), otra para el departamento (6). En la evaluación con frases
+disjuntas —fraseo nunca visto en entrenamiento— da 0,965 de exactitud en tipo
+(azar ~0,20) y 0,892 en departamento (azar ~0,17), con brechas train-test de 0,035
+y 0,108: generaliza sin memorizar.
 
 **¿Cómo das explicabilidad?**
 Multiplico el vector TF-IDF por los coeficientes de la clase predicha y reporto los

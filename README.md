@@ -103,10 +103,12 @@ was never seen in training.
 
 ```
 $ python -m pqrs_router.evaluation
-  type accuracy        : 0.97     # five types; chance ~0.20
-  type train-test gap  : 0.04     # tiny -> not overfit
-  department accuracy  : 0.89     # six departments; chance ~0.17
-  department gap       : 0.11
+Phrase-disjoint evaluation (test wording never seen in training):
+  train / test size    : 1800 / 600
+  type accuracy        : 0.965  (chance ~0.20)    # five types
+  type train-test gap  : 0.035  (small = not overfit)
+  department accuracy  : 0.892  (chance ~0.17)    # six departments
+  department gap       : 0.108
 ```
 
 These are the honest generalisation figures, and the small gaps are the evidence

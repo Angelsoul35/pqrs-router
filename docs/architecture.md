@@ -19,12 +19,10 @@ pieces, the data flow, and the boundaries between them.
 
 ## Data flow
 
-```
-┌──────────────┐  classify  ┌───────────────────────┐  rules  ┌────────────────────┐
-│ request text │ ─────────▶ │ type + department      │ ──────▶ │ RoutingDecision     │
-└──────────────┘            │ (+ confidences, terms) │         │ priority, due date, │
-                            └───────────────────────┘          │ reasons, uncertain  │
-                                                                └────────────────────┘
+```mermaid
+flowchart LR
+    A[Request text] -->|classify| B[Type + department<br/>+ confidences, terms]
+    B -->|rules| C[RoutingDecision<br/>priority, due date,<br/>reasons, uncertain]
 ```
 
 ## Two decisions, two mechanisms

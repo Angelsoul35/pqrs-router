@@ -29,12 +29,11 @@ models, which is the right tool for high-volume, auditable routing.
 
 ## How it works
 
-```
- request text        classify (ML)         rules                 decision
- ────────────   ──────────────────────  ─────────────────   ──────────────────
- free message ─▶ type + department   ─▶ priority (urgency) ─▶ route + priority +
-                 (TF-IDF + logistic)     + SLA deadline        due date + reasons
-                                         (business days)
+```mermaid
+flowchart LR
+    A[Request text] --> B[Classify / ML<br/>type + department<br/>TF-IDF + logistic]
+    B --> C[Rules<br/>priority / urgency<br/>+ SLA deadline, business days]
+    C --> D[Decision<br/>route + priority<br/>+ due date + reasons]
 ```
 
 1. **Classify (`classifier.py`).** Two logistic-regression models over a shared

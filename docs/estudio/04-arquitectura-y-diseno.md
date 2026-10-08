@@ -2,10 +2,12 @@
 
 ## Las piezas, de principio a fin
 
-```
- texto → clasificar (ML) → reglas (política) → enrutar → decisión
- taxonomy.py / generate.py / classifier.py     router.py  RoutingDecision
-                             rules.py
+```mermaid
+flowchart LR
+    A[Texto] --> B[Clasificar / ML<br/>taxonomy.py, generate.py<br/>classifier.py]
+    B --> C[Reglas / política<br/>rules.py]
+    C --> D[Enrutar<br/>router.py]
+    D --> E[Decisión<br/>RoutingDecision]
 ```
 
 Por encima: la **API HTTP** (`main.py`, FastAPI) y la **CLI** (`cli.py`, demo y

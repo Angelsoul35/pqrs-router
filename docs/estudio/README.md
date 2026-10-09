@@ -8,7 +8,8 @@ qué" de cada decisión en tu idioma, para estudiar con calma.
 ## Orden sugerido de lectura
 
 1. **[01-pqrs-y-clasificacion.md](01-pqrs-y-clasificacion.md)** — qué es PQRS y
-   cómo se clasifican el tipo y el departamento con modelos lineales.
+   cómo se clasifican el tipo y el departamento con modelos lineales, la evaluación
+   sin fuga y la validación sobre quejas reales de la CFPB.
 2. **[02-reglas-prioridad-y-plazos.md](02-reglas-prioridad-y-plazos.md)** — la
    prioridad por urgencia y los plazos legales en días hábiles.
 3. **[03-enrutamiento-e-incertidumbre.md](03-enrutamiento-e-incertidumbre.md)** —

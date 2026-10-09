@@ -73,7 +73,7 @@ triage.
 This is high-volume, latency-sensitive, auditable routing. A small linear model
 classifies in microseconds, costs nothing per request, and can be explained line
 by line; an LLM would add latency, cost, and opacity for no gain here. There is no
-shared-ledger requirement either. The honest engineering choice is the simplest
+shared-ledger requirement either. The sound engineering choice is the simplest
 tool that does the job well — and to say so.
 
 ## Extension points

@@ -111,10 +111,46 @@ Phrase-disjoint evaluation (test wording never seen in training):
   department gap       : 0.108
 ```
 
-These are the honest generalisation figures, and the small gaps are the evidence
+These are the leakage-free generalisation figures, and the small gaps are the evidence
 the models are neither underfit (scores far above chance) nor overfit (gaps are
 bounded). Generalisation works because each label's signal is spread across
 *recurring vocabulary* that the character n-grams pick up even in unseen phrasings.
+
+### Validated on real complaints (CFPB)
+
+The phrase-disjoint evaluation above measures generalisation to unseen *phrasings* of
+synthetic requests. To show the same approach holds on real intake, the classifier's
+exact pipeline (word + char TF-IDF + logistic regression) is benchmarked on a **real**
+corpus — the U.S. Consumer Financial Protection Bureau consumer-complaint narratives
+(via `fathyshalab/complaints`), routing a real complaint to its financial product, the
+real analogue of routing a request to a department. A balanced 3,000-complaint, 10-class
+slice is vendored under `datasets/complaints_real.jsonl` (see `datasets/README.md`). Run
+`python -m pqrs_router.real_benchmark`:
+
+```
+samples        : 3000 across 10 product classes (chance 0.100, majority 0.100)
+model          : word + char TF-IDF + logistic regression, C=0.3
+
+CV accuracy    : 0.689 +/- 0.021
+CV macro-F1    : 0.688
+train / test   : 0.894 / 0.679  (gap 0.215)
+shuffled labels: 0.111 CV accuracy (collapses to chance)
+
+regularisation path (held-out accuracy is stable; the gap is train-side):
+  C=0.2  train 0.868  test 0.676  gap 0.192
+  C=2.0  train 0.992  test 0.685  gap 0.306
+
+verdict: well-fit: strong, stable held-out accuracy well above chance
+```
+
+On real complaint narratives the classifier reaches **~0.69 held-out accuracy — about
+seven times the 0.10 chance rate** on ten classes, and shuffling the labels collapses it
+to 0.11, proving the signal is real. The regularisation path is the key evidence against
+overfitting: held-out accuracy is flat (~0.68) from `C=0.2` to `C=2.0` while the
+train/test gap grows, so the gap is the linear model memorising the training set, not
+wasted generalisation — the real ceiling is the genuinely overlapping CFPB categories
+(e.g. *Credit reporting* vs *Credit reporting, credit repair services…*). It is the same
+approach that routes synthetic requests, now shown to carry over to messy real text.
 
 ## Testing
 

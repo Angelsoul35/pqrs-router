@@ -26,7 +26,7 @@ def test_unfitted_raises():
 
 
 def test_phrase_disjoint_generalisation_and_no_overfit():
-    # Honest evaluation: train and test use disjoint pools of phrasings, so the
+    # Leakage-free evaluation: train and test use disjoint pools of phrasings, so the
     # test wording is unseen. A random split would report a misleading ~1.0.
     report = phrase_disjoint_eval()
     # Not underfit: well above chance (type ~0.20, department ~0.17).

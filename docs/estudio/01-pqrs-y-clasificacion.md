@@ -52,13 +52,13 @@ decidir si la decisión es fiable o va a revisión (guía 03).
 
 ### Calidad
 
-### Evaluación honesta (over/underfitting)
+### Evaluación sin fuga (over/underfitting)
 
 Con datos sintéticos de plantillas, un split aleatorio daría ~1.0 de exactitud y
 sería **mentira**: train y test compartirían las frases y mediríamos memoria. Por
 eso `evaluation.py` hace un **split por frases disjuntas** (aperturas de tipo,
 temas de departamento y cláusulas de contexto se parten; la prueba usa solo las
-partes retiradas). Resultado honesto:
+partes retiradas). Resultado sin fuga:
 
 ```
 type accuracy      : 0.965  (5 tipos; azar ~0.20)   gap 0.035 -> no sobreajusta
@@ -70,6 +70,36 @@ recurrente** (invoice/charge, connection/signal, outage/leak...) que los n-grama
 de carácter reconocen aunque el fraseo exacto esté retirado. No hay underfitting
 (muy por encima del azar) ni overfitting patológico (la brecha es pequeña). Además
 usamos word + char n-grams (`FeatureUnion`) para capturar esas raíces.
+
+### Validación con datos reales (quejas de la CFPB)
+
+La evaluación por frases disjuntas mide la generalización a *fraseos* nuevos de
+solicitudes sintéticas. La otra prueba es dato **real**: el mismo pipeline
+(word + char TF-IDF + regresión logística) se entrena sobre un corpus real de
+quejas de consumidores de la CFPB de EE. UU. (`fathyshalab/complaints`), enrutando
+cada queja a su **producto financiero** — el análogo real de enrutar a un
+departamento. Con `python -m pqrs_router.real_benchmark` sobre 3000 quejas
+balanceadas en 10 clases:
+
+```
+CV accuracy    : 0.689 +/- 0.021   (azar 0.100 -> ~7x)
+train / test   : 0.894 / 0.679     (gap 0.215, con C=0.3)
+shuffled labels: 0.111             (colapsa al azar: la señal es real)
+
+ruta de regularización (la exactitud de test es estable; la brecha es de train):
+  C=0.2  train 0.868  test 0.676
+  C=2.0  train 0.992  test 0.685
+```
+
+**La lección clave sobre over/underfitting está aquí.** El modelo lineal sobre
+TF-IDF disperso **memoriza** el train (su exactitud sube a ~1.0 con C alto), así que
+la brecha train/test crece con C. Pero la exactitud de **test apenas se mueve**
+(~0.68) en toda la ruta: la brecha es memorización del train, no generalización
+desperdiciada. Por eso usamos un `C=0.3` más regularizado (brecha sana 0.215) sin
+perder test. El techo real (~0.68) no es overfitting: son categorías de la CFPB que
+**se solapan de verdad** (p. ej. *Credit reporting* vs *Credit reporting, credit
+repair services…*), que ni una persona separaría siempre bien. El control de
+etiquetas barajadas (0.111 ≈ azar) confirma que lo aprendido es señal real.
 
 ## La explicabilidad, paso a paso
 

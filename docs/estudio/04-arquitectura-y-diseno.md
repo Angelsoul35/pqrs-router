@@ -48,7 +48,7 @@ salta fines de semana. Los festivos son una extensión en `add_business_days`.
 Este es un enrutamiento de alto volumen, sensible a latencia y coste, y auditable.
 Un modelo lineal clasifica en microsegundos, no cuesta por solicitud y se explica
 línea a línea; un LLM añadiría latencia, coste y opacidad sin ganancia. Tampoco
-hay necesidad de un registro compartido inmutable. La ingeniería honesta es usar
+hay necesidad de un registro compartido inmutable. La ingeniería sensata es usar
 la herramienta más simple que resuelve bien el problema — y decirlo. No todos los
 proyectos del portafolio necesitan las mismas tecnologías.
 

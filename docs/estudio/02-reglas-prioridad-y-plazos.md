@@ -49,7 +49,7 @@ Recibido el lunes 2026-01-05, una petición (15 días hábiles) vence el lunes
 2026-01-26 (tres semanas después, saltando los fines de semana). Una sugerencia
 (30 días hábiles) vence el 2026-02-16.
 
-### Una extensión honesta
+### Una extensión natural
 
 El cálculo salta fines de semana pero **no** festivos, que varían por país y año.
 `add_business_days` es el único sitio donde añadir un calendario de festivos, y

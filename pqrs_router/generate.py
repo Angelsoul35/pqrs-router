@@ -1,4 +1,4 @@
-"""Synthetic, labelled citizen requests for training and honest evaluation.
+"""Synthetic, labelled citizen requests for training and leakage-free evaluation.
 
 A classifier trained and tested on the same few templates memorises them and
 reports a meaningless ~1.0 accuracy. To avoid that, this generator uses many
